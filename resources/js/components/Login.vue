@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
     data() {
         return {
@@ -61,68 +63,68 @@ export default {
             },
             loginRules: {
                 email: [
-                    {
-                        required: true,
-                        message: "Email is required!",
-                        trigger: "blur",
-                    },
-                    {
-                        type: "email",
-                        message: "Invalid email!",
-                        trigger: "blur",
-                    },
+                    // {
+                    //     required: true,
+                    //     message: "Email is required!",
+                    //     trigger: "blur",
+                    // },
+                    // {
+                    //     type: "email",
+                    //     message: "Invalid email!",
+                    //     trigger: "blur",
+                    // },
                 ],
                 password: [
-                    {
-                        required: true,
-                        message: "Password is required!",
-                        trigger: "blur",
-                    },
+                    // {
+                    //     required: true,
+                    //     message: "Password is required!",
+                    //     trigger: "blur",
+                    // },
                 ],
             },
         };
     },
     mounted() {
-        axios.get("/api/user").then((res) => {
-            console.log(res);
-        });
+        // axios.get("/api/user").then((res) => {
+        //     console.log(res);
+        // });
+        // console.log(mapActions);
     },
     methods: {
+        ...mapActions("auth", ["LoginSubmit"]),
         submitLogin(login) {
             this.$refs[login].validate((valid) => {
                 if (valid) {
-                    axios
-                        .post("/api/login", this.login)
-                        .then((response) => {
-                            console.log(response);
-                            // if (response.status === 200) {
-                            //     this.$notify({
-                            //         title: "Success",
-                            //         message: "Logged in successfully!",
-                            //         type: "success",
-                            //     });
-
-                            //     setTimeout(() => {
-                            //         const prevRoute =
-                            //             this.$router.history._startLocation;
-                            //         this.$router.push({
-                            //             path: `${
-                            //                 prevRoute !== "/login"
-                            //                     ? prevRoute
-                            //                     : "/chat"
-                            //             }`,
-                            //         });
-                            //     }, 1000);
-                            // }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                            // this.$notify.error({
-                            //     title: "Error",
-                            //     message: error.response.data,
-                            // });
-                        });
+                    this.LoginSubmit(this.login);
+                    // axios
+                    //     .post("/api/login", this.login)
+                    //     .then((response) => {
+                    //         if (response.status === 200) {
+                    //             this.$notify({
+                    //                 title: "Success",
+                    //                 message: "Logged in successfully!",
+                    //                 type: "success",
+                    //             });
+                    //         }
+                    //     })
+                    //     .catch((error) => {
+                    //         this.$notify.error({
+                    //             title: "Error",
+                    //             message: error.response.data,
+                    //         });
+                    //     });
                 }
+                //     setTimeout(() => {
+                //         const prevRoute =
+                //             this.$router.history._startLocation;
+                //         this.$router.push({
+                //             path: `${
+                //                 prevRoute !== "/login"
+                //                     ? prevRoute
+                //                     : "/chat"
+                //             }`,
+                //         });
+                //     }, 1000);
             });
         },
     },
