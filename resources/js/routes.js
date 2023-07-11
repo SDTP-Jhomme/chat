@@ -1,35 +1,29 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "./store";
 
 Vue.use(VueRouter);
 
-// import Chat from "./components/Chat";
+import Chat from "./components/Chat";
 import Login from "./components/Login";
 
 const routes = [
-    // {
-    //     path: "/chat",
-    //     component: Chat,
-    //     meta: { title: "Laravel Chat", requiresAuth: true },
-    // },
+    {
+        path: "/chat",
+        component: Chat,
+        meta: { title: "Laravel Chat", requiresAuth: true },
+    },
     {
         path: "/login",
         component: Login,
         meta: { title: "Login" },
-        // beforeEnter: (to, from, next) => {
-        //     axios
-        //         .get("/api/authenticated")
-        //         .then((response) => {
-        //             if (response) {
-        //                 next("/chat");
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             if (error) {
-        //                 next();
-        //             }
-        //         });
-        // },
+        beforeEnter: (to, from, next) => {
+            if (store.state.auth.loggedIn) {
+                next("/chat");
+            } else {
+                next();
+            }
+        },
     },
 ];
 
@@ -46,25 +40,15 @@ router.beforeEach((to, from, next) => {
         document.title = "My App"; // Set a default title if no meta title is available
     }
 
-    // if (to.matched.some((record) => record.meta.requiresAuth)) {
-    //     // Redirect to the login page if the user is not authenticated
-    //     axios
-    //         .get("/api/authenticated")
-    //         .then((response) => {
-    //             if (response) {
-    //                 next();
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             if (error) {
-    //                 next("/login");
-    //             }
-    //         });
-    // } else {
-    //     next();
-    // }
-
-    next();
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        if (store.state.auth.loggedIn) {
+            next();
+        } else {
+            next("/login");
+        }
+    } else {
+        next();
+    }
 });
 
 export default router;

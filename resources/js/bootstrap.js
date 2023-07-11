@@ -1,7 +1,7 @@
-window._ = require('lodash');
+window._ = require("lodash");
 
 try {
-    require('bootstrap');
+    require("bootstrap");
 } catch (e) {}
 
 /**
@@ -10,10 +10,25 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = require('axios');
+import store from "./store";
+window.axios = require("axios");
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 window.axios.defaults.withCredentials = true;
+
+// Add a request interceptor
+axios.interceptors.request.use(
+    (config) => {
+        if (store.state.auth.token) {
+            const token = store.state.auth.token;
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
