@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 
 import Chat from "./components/Chat";
 import Login from "./components/Login";
+import Register from "./components/Register";
 
 const routes = [
     {
@@ -17,6 +18,18 @@ const routes = [
         path: "/login",
         component: Login,
         meta: { title: "Login" },
+        beforeEnter: (to, from, next) => {
+            if (store.state.auth.loggedIn) {
+                next("/chat");
+            } else {
+                next();
+            }
+        },
+    },
+    {
+        path: "/register",
+        component: Register,
+        meta: { title: "Register" },
         beforeEnter: (to, from, next) => {
             if (store.state.auth.loggedIn) {
                 next("/chat");

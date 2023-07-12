@@ -13,37 +13,53 @@
                     <div class="col-lg-8">
                         <div class="card-body py-5 px-md-5">
                             <div class="d-flex justify-content-center mb-4">
-                                <h2>Login</h2>
+                                <h2>Register</h2>
                             </div>
                             <el-form
-                                :model="login"
-                                :rules="loginRules"
+                                :model="register"
+                                :rules="registerRules"
                                 label-position="left"
-                                ref="login"
-                                label-width="120px"
+                                ref="register"
+                                label-width="160px"
                             >
+                                <el-form-item label="Name" prop="name">
+                                    <el-input
+                                        v-model="register.name"
+                                    ></el-input>
+                                </el-form-item>
                                 <el-form-item label="Email" prop="email">
-                                    <el-input v-model="login.email"></el-input>
+                                    <el-input
+                                        v-model="register.email"
+                                    ></el-input>
                                 </el-form-item>
                                 <el-form-item label="Password" prop="password">
                                     <el-input
-                                        v-model="login.password"
+                                        v-model="register.password"
                                         show-password
+                                    ></el-input>
+                                </el-form-item>
+                                <el-form-item
+                                    label="Confirm Password"
+                                    prop="cPassword"
+                                >
+                                    <el-input
+                                        v-model="register.cPassword"
+                                        type="password"
                                     ></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button
                                         type="primary"
-                                        @click="submit('login')"
-                                        >Login</el-button
+                                        @click="submit('register')"
+                                        >Register</el-button
                                     >
                                 </el-form-item>
                                 <el-form-item>
-                                    Not a member?
+                                    Registered already?
                                     <router-link
                                         class="text-decoration-none"
-                                        to="/register"
-                                        >Register</router-link
+                                        to="/login"
+                                        >Login</router-link
                                     >
                                 </el-form-item>
                             </el-form>
@@ -56,16 +72,25 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
     data() {
         return {
-            login: {
+            register: {
+                name: "",
                 email: "",
                 password: "",
+                cPassword: "",
             },
-            loginRules: {
+            registerRules: {
+                name: [
+                    {
+                        required: true,
+                        message: "Name is required!",
+                        trigger: "blur",
+                    },
+                ],
                 email: [
                     {
                         required: true,
@@ -85,17 +110,35 @@ export default {
                         trigger: "blur",
                     },
                 ],
+                cPassword: [
+                    {
+                        required: true,
+                        message: "Please confirm password!",
+                        trigger: "blur",
+                    },
+                    { validator: this.confirmPassword, trigger: "blur" },
+                ],
             },
         };
     },
+    computed: {
+        ...mapState("auth", ["loggedIn"]),
+    },
     methods: {
-        ...mapActions("auth", ["Login"]),
-        submit(login) {
-            this.$refs[login].validate((valid) => {
+        ...mapActions("auth", ["Register"]),
+        submit(register) {
+            this.$refs[register].validate((valid) => {
                 if (valid) {
-                    this.Login(this.login);
+                    this.Register(this.register);
                 }
             });
+        },
+        confirmPassword(rule, value, callback) {
+            if (this.register.password !== value) {
+                callback(new Error("Password does not match!"));
+            } else {
+                callback();
+            }
         },
     },
 };
