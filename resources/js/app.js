@@ -6,19 +6,15 @@
 
 require("./bootstrap");
 require("./firebase");
+require("./global");
 
 window.Vue = require("vue").default;
+
 import ElementUI from "element-ui";
 import router from "./routes";
 import store from "./store";
 
 Vue.use(ElementUI, { locale: "en" });
-
-Vue.directive("image", {
-    inserted(el, binding) {
-        el.src = binding.value;
-    },
-});
 
 new Vue({
     el: "#app",

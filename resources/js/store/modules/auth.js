@@ -3,6 +3,7 @@ import router from "../../routes";
 const auth = {
     namespaced: true,
     state: {
+        user: null,
         token: null,
         loggedIn: false,
     },
@@ -10,24 +11,29 @@ const auth = {
     getters: {
         token: (state) => state.token,
         loggedIn: (state) => state.loggedIn,
+        user: (state) => state.user,
     },
 
     mutations: {
-        UPDATE_LOGIN(state, pl) {
-            state.loggedIn = pl;
+        UPDATE_LOGIN(state, payload) {
+            state.loggedIn = payload;
         },
-        UPDATE_TOKEN(state, pl) {
-            state.token = pl;
+        UPDATE_TOKEN(state, payload) {
+            state.token = payload;
+        },
+        UPDATE_USER(state, payload) {
+            state.user = payload;
         },
     },
 
     actions: {
-        LoginSubmit({ commit }, pl) {
+        Login({ commit }, payload) {
             axios
-                .post("/api/login", pl)
+                .post("/api/login", payload)
                 .then((response) => {
                     if (response.status === 200) {
                         commit("UPDATE_TOKEN", response.data.token);
+                        commit("UPDATE_USER", response.data.user);
                         commit("UPDATE_LOGIN", true);
                         Vue.prototype.$notify({
                             title: "Success",
@@ -45,15 +51,46 @@ const auth = {
                     }
                 })
                 .catch((error) => {
-                    Vue.prototype.$notify.error({
+                    Vue.prototype.$message.error({
                         title: "Error",
                         message: error.response.data,
                     });
                 });
         },
-        Logout({ commit }, pl) {
+        Register({ commit }, payload) {
+            console.log(payload);
             axios
-                .post("/api/logout", pl)
+                .post("/api/register", payload)
+                .then((response) => {
+                    if (response.status === 200) {
+                        commit("UPDATE_TOKEN", response.data.token);
+                        commit("UPDATE_USER", response.data.user);
+                        commit("UPDATE_LOGIN", true);
+                        Vue.prototype.$notify({
+                            title: "Success",
+                            message: "Logged in successfully!",
+                            type: "success",
+                        });
+                        setTimeout(() => {
+                            const prevRoute = router.history._startLocation;
+                            router.push({
+                                path: `${
+                                    prevRoute !== "/login" ? prevRoute : "/chat"
+                                }`,
+                            });
+                        }, 1000);
+                    }
+                })
+                .catch((error) => {
+                    Vue.prototype.$message.error({
+                        title: "Error",
+                        message: error.response.data,
+                    });
+                });
+        },
+        Logout({ commit }, payload) {
+            axios
+                .post("/api/logout", payload)
                 .then((response) => {
                     if (response.status === 200) {
                         commit("UPDATE_TOKEN", null);
