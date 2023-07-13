@@ -17,7 +17,7 @@ import store from "./store";
 Vue.use(ElementUI, { locale: "en" });
 
 new Vue({
-    el: "#app",
-    router,
-    store,
+   el: "#app",
+   router,
+   store,
 });

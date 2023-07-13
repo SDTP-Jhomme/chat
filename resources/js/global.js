@@ -9,7 +9,7 @@ Vue.component("wrapper", Wrapper);
 
 // Directives
 Vue.directive("image", {
-    inserted(el, binding) {
-        el.src = binding.value;
-    },
+   inserted(el, binding) {
+      el.src = binding.value;
+   },
 });

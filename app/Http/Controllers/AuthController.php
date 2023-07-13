@@ -13,8 +13,8 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
 
-        if($user) {
-            return response()->json("Email already exist!", 401);
+        if ($user) {
+            return response()->json('Email already exist!', 401);
         }
 
         $user = new User();
@@ -51,20 +51,21 @@ class AuthController extends Controller
             // Check if user exist
             $user = User::where('email', $request->email)->first();
 
-            if(!$user){
-                $error = "Email not found!";
+            if (!$user) {
+                $error = 'Email not found!';
             } else {
                 // Check if password is correct
-                if(!Hash::check($request->password, $user->password)){
-                    $error = "Password is incorrect!";
+                if (!Hash::check($request->password, $user->password)) {
+                    $error = 'Password is incorrect!';
                 }
             }
-            
+
             return response()->json($error, 401);
         }
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
