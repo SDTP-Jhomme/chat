@@ -6,9 +6,15 @@ Vue.use(VueRouter);
 
 import Chat from "./components/Chat";
 import Login from "./components/Login";
+import Home from "./components/Home";
 import Register from "./components/Register";
 
 const routes = [
+   {
+      path: "/",
+      component: Home,
+      meta: { title: "Laravel", requiresAuth: true },
+   },
    {
       path: "/chat",
       component: Chat,
@@ -19,7 +25,7 @@ const routes = [
       component: Login,
       meta: { title: "Login" },
       beforeEnter: (to, from, next) => {
-         if (store.state.auth.loggedIn) {
+         if (store.state.auth.token) {
             next("/chat");
          } else {
             next();
@@ -31,7 +37,7 @@ const routes = [
       component: Register,
       meta: { title: "Register" },
       beforeEnter: (to, from, next) => {
-         if (store.state.auth.loggedIn) {
+         if (store.state.auth.token) {
             next("/chat");
          } else {
             next();
@@ -54,7 +60,7 @@ router.beforeEach((to, from, next) => {
    }
 
    if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (store.state.auth.loggedIn) {
+      if (store.state.auth.token) {
          next();
       } else {
          next("/login");

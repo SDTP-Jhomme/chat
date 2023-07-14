@@ -14,7 +14,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="container-md" id="app">
+        <div id="app">
             <router-view></router-view>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
