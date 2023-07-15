@@ -69,8 +69,8 @@ Install `Prettier - Code Formatter by Prettier` and `php cs fixer by junstyle`.
 
 Note: In VS Code Workspace settings, find `PHP-cs-fixer: Rules`. Click `settings.json` and add the following:
 
-{
+`{
     "php-cs-fixer.env": {
         "PHP_CS_FIXER_IGNORE_ENV": "1"
     }
-}
+}`
