@@ -2,10 +2,10 @@ import Vue from "vue";
 
 // Components
 import Wrapper from "./components/layouts/Wrapper";
-// import Upload from "./components/ui/Upload";
+import Modal from "./components/ui/Modal";
 
 Vue.component("wrapper", Wrapper);
-// Vue.component("upload", Upload);
+Vue.component("modal", Modal);
 
 // Directives
 Vue.directive("image", {

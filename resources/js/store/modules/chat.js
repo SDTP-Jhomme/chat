@@ -11,6 +11,7 @@ const chat = {
    namespaced: true,
    state: {
       messages: null,
+      chatId: [],
    },
 
    getters: {},
@@ -19,9 +20,15 @@ const chat = {
       UPDATE_MESSAGES(state, payload) {
          state.messages = payload;
       },
+      ADD_CHAT_USER(state, payload) {
+         state.toId.push(payload);
+      },
    },
 
    actions: {
+      AddUser({ commit }, payload) {
+         commit("ADD_CHAT_USER", payload);
+      },
       async Send({ commit }, payload) {
          try {
             const response = await addDoc(collection(database, "messages"), {
@@ -37,9 +44,10 @@ const chat = {
          }
       },
       async GetMessages({ commit }, payload) {
-         try {
-            const messageQuery = query(collection(database, "messages"));
-            onSnapshot(messageQuery, (querySnapshot) => {
+         const messageQuery = query(collection(database, "messages"));
+         onSnapshot(
+            messageQuery,
+            (querySnapshot) => {
                const messages = [];
 
                querySnapshot.forEach((doc) => {
@@ -47,13 +55,14 @@ const chat = {
                });
 
                commit("UPDATE_MESSAGES", messages);
-            });
-         } catch (error) {
-            Vue.prototype.$message.error({
-               title: "Error",
-               message: error,
-            });
-         }
+            },
+            (error) => {
+               Vue.prototype.$message.error({
+                  title: "Error",
+                  message: error,
+               });
+            }
+         );
       },
    },
 };

@@ -1,0 +1,8 @@
+{
+    "editor.codeActionsOnSave": {},
+    "php-cs-fixer.exclude": [],
+    "php-cs-fixer.rules": "",
+    "php-cs-fixer.env": {
+        "PHP_CS_FIXER_IGNORE_ENV": "1"
+    }
+}

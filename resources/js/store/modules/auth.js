@@ -1,5 +1,4 @@
 import router from "../../routes";
-import vuexLocal from "../persist";
 
 const auth = {
    namespaced: true,
@@ -51,7 +50,6 @@ const auth = {
             });
       },
       Register({ commit }, payload) {
-         console.log(payload);
          axios
             .post("/api/register", payload)
             .then((response) => {

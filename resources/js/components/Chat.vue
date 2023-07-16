@@ -11,6 +11,15 @@
                            icon="fa fa-search"
                         ></el-button>
                      </el-input>
+                     <div class="d-grid mt-2">
+                        <el-button
+                           @click="openUserChatModal"
+                           type="primary"
+                           icon="el-icon-chat-square"
+                           autofocus
+                           >New Message</el-button
+                        >
+                     </div>
                      <ul class="list-unstyled chat-list mt-2 mb-0">
                         <li class="clearfix">
                            <img
@@ -104,6 +113,9 @@
             </div>
          </div>
       </div>
+      <modal title="New Message" :visible="modal" :cancel="cancel" width="300px">
+         This is a message
+      </modal>
    </wrapper>
 </template>
 <script>
@@ -113,6 +125,7 @@ export default {
    data() {
       return {
          message: "",
+         modal: false,
       };
    },
    computed: {
@@ -120,7 +133,7 @@ export default {
       ...mapState("chat", ["messages"]),
    },
    mounted() {
-      console.log(this.messages);
+      // console.log(this.messages);
    },
    beforeMount() {
       this.GetMessages();
@@ -137,6 +150,15 @@ export default {
                this.message = "";
             }
          });
+      },
+      openUserChatModal() {
+         this.modal = true;
+      },
+      confirm() {
+         this.modal = false;
+      },
+      cancel() {
+         this.modal = false;
       },
    },
 };

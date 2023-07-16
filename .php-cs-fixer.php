@@ -1,6 +1,12 @@
 <?php
 
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('vendor')
+    ->exclude('storage')
+    ->in(__DIR__);
+
 return (new PhpCsFixer\Config())
+    ->setFinder($finder)
     ->setRules([
         '@PSR12' => true,
         'array_indentation' => true,
