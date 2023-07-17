@@ -113,8 +113,26 @@
             </div>
          </div>
       </div>
-      <modal title="New Message" :visible="modal" :cancel="cancel" width="300px">
-         This is a message
+      <modal
+         title="New Message"
+         :visible="modal"
+         :cancel="cancel"
+         width="400px"
+      >
+         <div id="plist" class="people-list">
+            <ul class="list-unstyled chat-list mt-2 mb-0">
+               <li v-for="user in users" class="clearfix">
+                  <img v-image="user.avatar" alt="avatar" />
+                  <div class="about">
+                     <div class="name">{{ user.name }}</div>
+                     <div class="status">
+                        <i class="fa fa-circle offline"></i>
+                        Offline
+                     </div>
+                  </div>
+               </li>
+            </ul>
+         </div>
       </modal>
    </wrapper>
 </template>
@@ -130,16 +148,16 @@ export default {
    },
    computed: {
       ...mapState("auth", ["user"]),
-      ...mapState("chat", ["messages"]),
+      ...mapState("chat", ["messages", "users"]),
    },
-   mounted() {
-      // console.log(this.messages);
+   created() {
+      this.GetAvailableUsers();
    },
    beforeMount() {
       this.GetMessages();
    },
    methods: {
-      ...mapActions("chat", ["Send", "GetMessages"]),
+      ...mapActions("chat", ["Send", "GetMessages", "GetAvailableUsers"]),
       send() {
          this.Send({
             userId: this.user.id,

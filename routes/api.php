@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
+
+    // User
     Route::post('upload', [UserController::class, 'upload_avatar']);
+    Route::get('users', [UserController::class, 'index']);
 });
 
 Route::post('register', [AuthController::class, 'register']);

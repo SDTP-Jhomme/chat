@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        return response()->json(User::all(), 200);
+    }
+
     public function upload_avatar(Request $request)
     {
         $path = Storage::disk('public')->put('images/avatar', $request->file('file'));

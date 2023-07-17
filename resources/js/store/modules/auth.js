@@ -1,10 +1,13 @@
+import { addDoc, collection } from "firebase/firestore";
 import router from "../../routes";
+import moment from "moment";
 
 const auth = {
    namespaced: true,
    state: {
       user: null,
       token: null,
+      status: null,
    },
 
    getters: {
@@ -19,27 +22,43 @@ const auth = {
       UPDATE_USER(state, payload) {
          state.user = payload;
       },
+      UPDATE_STATUS(state, payload) {
+         state.status = payload;
+      },
    },
 
    actions: {
       Login({ commit }, payload) {
          axios
             .post("/api/login", payload)
-            .then((response) => {
+            .then(async (response) => {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", response.data.token);
                   commit("UPDATE_USER", response.data.user);
+                  const firebaseResponse = await addDoc(
+                     collection(database, "status"),
+                     {
+                        id: response.data.user.id,
+                        status: "online",
+                        timestamp: moment().format("YYYY-MM-DD h:mm:ss"),
+                     }
+                  );
+
+                  commit("UPDATE_STATUS", {
+                     statusId: firebaseResponse.id,
+                     userId: response.data.user.id,
+                  });
                   Vue.prototype.$notify({
                      title: "Success",
                      message: "Logged in successfully!",
                      type: "success",
                   });
-                  setTimeout(() => {
-                     const prevRoute = router.history._startLocation;
-                     router.push({
-                        path: `${prevRoute !== "/login" ? prevRoute : "/chat"}`,
-                     });
-                  }, 1000);
+                  // setTimeout(() => {
+                  //    const prevRoute = router.history._startLocation;
+                  //    router.push({
+                  //       path: `${prevRoute !== "/login" ? prevRoute : "/chat"}`,
+                  //    });
+                  // }, 1000);
                }
             })
             .catch((error) => {
