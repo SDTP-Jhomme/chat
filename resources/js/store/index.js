@@ -6,7 +6,6 @@ import vuexLocal from "./persist";
 import auth from "./modules/auth";
 import chat from "./modules/chat";
 import upload from "./modules/upload";
-import user from "./modules/user";
 
 Vue.use(Vuex);
 
@@ -15,7 +14,6 @@ const store = new Vuex.Store({
       auth,
       chat,
       upload,
-      user,
    },
 });
 

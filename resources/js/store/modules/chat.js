@@ -31,6 +31,9 @@ const chat = {
       UPDATE_AVAILABLE_USERS(state, payload) {
          state.availableUsers = payload;
       },
+      UPDATE_USERS(state, payload) {
+         state.users = payload;
+      },
    },
 
    actions: {

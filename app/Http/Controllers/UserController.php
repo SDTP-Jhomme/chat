@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         return response()->json(User::all(), 200);
     }

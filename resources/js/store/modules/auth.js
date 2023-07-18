@@ -32,6 +32,19 @@ const auth = {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", response.data.token);
                   commit("UPDATE_USER", response.data.user);
+                  const firebaseResponse = await addDoc(
+                     collection(database, "status"),
+                     {
+                        id: response.data.user.id,
+                        status: "online",
+                        timestamp: moment().format("YYYY-MM-DD h:mm:ss"),
+                     }
+                  );
+
+                  commit("UPDATE_STATUS", {
+                     statusId: firebaseResponse.id,
+                     userId: response.data.user.id,
+                  });
                   Vue.prototype.$notify({
                      title: "Success",
                      message: "Logged in successfully!",
