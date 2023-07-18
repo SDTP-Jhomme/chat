@@ -1,16 +1,16 @@
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import router from "../../routes";
+import moment from "moment";
 
 const auth = {
    namespaced: true,
    state: {
       user: null,
       token: null,
+      statusId: null,
    },
 
-   getters: {
-      token: (state) => state.token,
-      user: (state) => state.user,
-   },
+   getters: {},
 
    mutations: {
       UPDATE_TOKEN(state, payload) {
@@ -19,13 +19,16 @@ const auth = {
       UPDATE_USER(state, payload) {
          state.user = payload;
       },
+      UPDATE_STATUS_ID(state, payload) {
+         state.statusId = payload;
+      },
    },
 
    actions: {
-      Login({ commit }, payload) {
+      async Login({ commit }, payload) {
          axios
             .post("/api/login", payload)
-            .then((response) => {
+            .then(async (response) => {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", response.data.token);
                   commit("UPDATE_USER", response.data.user);
@@ -34,6 +37,17 @@ const auth = {
                      message: "Logged in successfully!",
                      type: "success",
                   });
+
+                  commit("UPDATE_STATUS_ID", response.data.user.id.toString());
+
+                  await setDoc(
+                     doc(database, "status", response.data.user.id.toString()),
+                     {
+                        online: true,
+                        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
+                     }
+                  );
+
                   setTimeout(() => {
                      const prevRoute = router.history._startLocation;
                      router.push({
@@ -76,10 +90,10 @@ const auth = {
                });
             });
       },
-      Logout({ commit }, payload) {
+      async Logout({ commit, rootState }, payload) {
          axios
             .post("/api/logout", payload)
-            .then((response) => {
+            .then(async (response) => {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", null);
                   commit("UPDATE_USER", null);
@@ -89,6 +103,15 @@ const auth = {
                      message: "Logged out successfully!",
                      type: "success",
                   });
+
+                  await updateDoc(
+                     doc(database, "status", rootState.auth.statusId),
+                     {
+                        online: false,
+                        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
+                     }
+                  );
+                  commit("UPDATE_STATUS_ID", null);
                }
             })
             .catch((error) => {

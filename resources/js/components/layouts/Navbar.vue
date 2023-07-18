@@ -84,8 +84,10 @@ export default {
       imageUrl() {
          if (this.image) {
             return this.image;
-         } else {
+         } else if (this.user.avatar) {
             return `/storage/${this.user.avatar}`;
+         } else {
+            return "";
          }
       },
    },

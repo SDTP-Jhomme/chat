@@ -1,7 +1,7 @@
 window._ = require("lodash");
 
 try {
-    require("bootstrap");
+   require("bootstrap");
 } catch (e) {}
 
 /**
@@ -18,16 +18,16 @@ window.axios.defaults.withCredentials = true;
 
 // Add a request interceptor
 axios.interceptors.request.use(
-    (config) => {
-        if (store.state.auth.token) {
-            const token = store.state.auth.token;
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
+   (config) => {
+      if (store.state.auth.token) {
+         const token = store.state.auth.token;
+         config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+   },
+   (error) => {
+      return Promise.reject(error);
+   }
 );
 
 /**
@@ -36,13 +36,13 @@ axios.interceptors.request.use(
  * allows your team to easily build robust real-time web applications.
  */
 
-// import Echo from 'laravel-echo';
+import Echo from 'laravel-echo';
 
-// window.Pusher = require('pusher-js');
+window.Pusher = require('pusher-js');
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.MIX_PUSHER_APP_KEY,
-//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-//     forceTLS: true
-// });
+window.Echo = new Echo({
+   broadcaster: "pusher",
+   key: process.env.MIX_PUSHER_APP_KEY,
+   cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+   forceTLS: true,
+});

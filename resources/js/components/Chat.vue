@@ -16,21 +16,28 @@
                            @click="openUserChatModal"
                            type="primary"
                            icon="el-icon-chat-square"
-                           autofocus
                            >New Message</el-button
                         >
                      </div>
+                     <div class="d-grid mt-2">
+                        <el-button
+                           @click="openUserChatModal"
+                           type="primary"
+                           icon="el-icon-chat-line-square"
+                           >New Group Message</el-button
+                        >
+                     </div>
                      <ul class="list-unstyled chat-list mt-2 mb-0">
-                        <li class="clearfix">
-                           <img
-                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                              alt="avatar"
-                           />
+                        <li v-for="user in chatUsers" class="clearfix">
+                           <img v-image="user.avatar" alt="avatar" />
                            <div class="about">
-                              <div class="name">Vincent Porter</div>
+                              <div class="name">{{ user.name }}</div>
                               <div class="status">
-                                 <i class="fa fa-circle offline"></i>
-                                 left 7 mins ago
+                                 <i
+                                    class="fa fa-circle"
+                                    :class="user.online ? 'online' : 'offline'"
+                                 ></i>
+                                 {{ user.online ? "Online" : "Offline" }}
                               </div>
                            </div>
                         </li>
@@ -113,8 +120,33 @@
             </div>
          </div>
       </div>
-      <modal title="New Message" :visible="modal" :cancel="cancel" width="300px">
-         This is a message
+      <modal
+         title="New Message"
+         :visible="modal"
+         :cancel="cancel"
+         width="400px"
+      >
+         <div id="plist" class="people-list">
+            <ul class="list-unstyled chat-list mt-2 mb-0">
+               <li
+                  v-for="user in availableUsers"
+                  class="clearfix"
+                  @click="selectUser(user)"
+               >
+                  <img v-image="user.avatar" alt="avatar" />
+                  <div class="about">
+                     <div class="name">{{ user.name }}</div>
+                     <div class="status">
+                        <i
+                           class="fa fa-circle"
+                           :class="user.online ? 'online' : 'offline'"
+                        ></i>
+                        {{ user.online ? "Online" : "Offline" }}
+                     </div>
+                  </div>
+               </li>
+            </ul>
+         </div>
       </modal>
    </wrapper>
 </template>
@@ -130,16 +162,21 @@ export default {
    },
    computed: {
       ...mapState("auth", ["user"]),
-      ...mapState("chat", ["messages"]),
+      ...mapState("chat", ["messages", "availableUsers", "chatUsers"]),
    },
-   mounted() {
-      // console.log(this.messages);
+   created() {
+      this.GetAvailableUsers();
    },
    beforeMount() {
       this.GetMessages();
    },
    methods: {
-      ...mapActions("chat", ["Send", "GetMessages"]),
+      ...mapActions("chat", [
+         "Send",
+         "GetMessages",
+         "GetAvailableUsers",
+         "AddUser",
+      ]),
       send() {
          this.Send({
             userId: this.user.id,
@@ -159,6 +196,9 @@ export default {
       },
       cancel() {
          this.modal = false;
+      },
+      selectUser(user) {
+         this.AddUser(user);
       },
    },
 };
