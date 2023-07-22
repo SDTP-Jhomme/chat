@@ -119,7 +119,6 @@ export default {
       },
       uploadAvatar() {
          const form = new FormData();
-         form.append("id", this.user.id);
          form.append("file", this.file);
 
          this.UploadAvatar(form);

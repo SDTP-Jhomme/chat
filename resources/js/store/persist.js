@@ -2,7 +2,7 @@ import VuexPersistence from "vuex-persist";
 
 const vuexLocal = new VuexPersistence({
    storage: window.localStorage,
-   modules: ["auth", "chat"],
+   modules: ["auth"],
 });
 
 export default vuexLocal;

@@ -4,10 +4,10 @@ import store from "./store";
 
 Vue.use(VueRouter);
 
-import Chat from "./components/Chat";
-import Login from "./components/Login";
-import Home from "./components/Home";
-import Register from "./components/Register";
+import Chat from "./components/pages/Chat";
+import Login from "./components/pages/Login";
+import Home from "./components/pages/Home";
+import Register from "./components/pages/Register";
 
 const routes = [
    {

@@ -1,16 +1,7 @@
-import {
-   collection,
-   addDoc,
-   query,
-   orderBy,
-   onSnapshot,
-   doc,
-} from "firebase/firestore";
-import moment from "moment";
-
 const chat = {
    namespaced: true,
    state: {
+      userChatModal: false,
       messages: null,
       chatUsers: [],
       availableUsers: null,
@@ -19,6 +10,9 @@ const chat = {
    getters: {},
 
    mutations: {
+      UPDATE_MODAL(state, payload) {
+         state.userChatModal = payload;
+      },
       UPDATE_MESSAGES(state, payload) {
          state.messages = payload;
       },
@@ -40,84 +34,29 @@ const chat = {
       AddUser({ commit }, payload) {
          commit("ADD_CHAT_USER", payload);
       },
+      EmptyAvailableUsers({ commit }, payload) {
+         commit("UPDATE_AVAILABLE_USERS", null);
+         commit("UPDATE_MODAL", false);
+      },
       GetAvailableUsers({ commit, rootState }, payload) {
          axios.get("/api/users").then((response) => {
-            const statusQuery = query(collection(database, "status"));
-            onSnapshot(statusQuery, (querySnapshot) => {
-               querySnapshot.forEach((doc) => {
-                  const newChatUsers =
-                     rootState.chat.chatUsers.length &&
-                     rootState.chat.chatUsers.map((user) => {
-                        if (user.id === parseInt(doc.id)) {
-                           return {
-                              ...user,
-                              online: doc.data().online,
-                           };
-                        }
-                        return user;
-                     });
-
-                  commit("UPDATE_CHAT_USERS", newChatUsers);
-
-                  const availableUsers = response.data
-                     .filter((user) => user.id !== rootState.auth.user.id)
-                     .map((user) => {
-                        if (user.id === parseInt(doc.id)) {
-                           return {
-                              ...user,
-                              avatar: user.avatar
-                                 ? `/storage/${user.avatar}`
-                                 : "/images/avatar/default.png",
-                              online: doc.data().online,
-                           };
-                        }
-                        return {
-                           ...user,
-                           avatar: user.avatar
-                              ? `/storage/${user.avatar}`
-                              : "/images/avatar/default.png",
-                        };
-                     });
-                  commit("UPDATE_AVAILABLE_USERS", availableUsers);
+            const availableUsers = response.data
+               .filter((user) => user.id !== rootState.auth.user.id)
+               .map((user) => {
+                  return {
+                     ...user,
+                     avatar: user.avatar
+                        ? `/storage/${user.avatar}`
+                        : "/images/avatar/default.png",
+                     status: user.status ? user.status : "offline",
+                  };
                });
-            });
+            commit("UPDATE_AVAILABLE_USERS", availableUsers);
+            commit("UPDATE_MODAL", true);
          });
       },
-      async Send({ commit }, payload) {
-         try {
-            const response = await addDoc(collection(database, "messages"), {
-               ...payload,
-               timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
-            });
-            return response;
-         } catch (error) {
-            Vue.prototype.$message.error({
-               title: "Error",
-               message: error,
-            });
-         }
-      },
-      async GetMessages({ commit }, payload) {
-         const messageQuery = query(collection(database, "messages"));
-         onSnapshot(
-            messageQuery,
-            (querySnapshot) => {
-               const messages = [];
-
-               querySnapshot.forEach((doc) => {
-                  messages.push({ id: doc.id, ...doc.data() });
-               });
-
-               commit("UPDATE_MESSAGES", messages);
-            },
-            (error) => {
-               Vue.prototype.$message.error({
-                  title: "Error",
-                  message: error,
-               });
-            }
-         );
-      },
+      Send({ commit }, payload) {},
+      GetMessages({ commit }, payload) {},
    },
 };
 

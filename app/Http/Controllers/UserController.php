@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -17,13 +18,10 @@ class UserController extends Controller
     {
         $path = Storage::disk('public')->put('images/avatar', $request->file('file'));
 
-        $user = User::findOrFail($request->id);
+        $user = Auth::user();
         $user->avatar = $path;
         $user->save();
 
-        return response()->json([
-            'avatar' => $path,
-            'message' => 'Avatar uploaded successfully'
-        ], 200);
+        return response()->json($user, 200);
     }
 }

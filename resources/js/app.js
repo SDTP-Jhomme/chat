@@ -5,7 +5,6 @@
  */
 
 require("./bootstrap");
-require("./firebase");
 require("./global");
 
 window.Vue = require("vue").default;

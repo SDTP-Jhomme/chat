@@ -13,19 +13,15 @@ const upload = {
       HandleModal({ commit }, payload) {
          commit("HANDLE_MODAL", payload);
       },
-      UploadAvatar({ commit, rootState }, payload) {
+      UploadAvatar({ commit }, payload) {
          axios.post("/api/upload", payload).then((response) => {
             if (response.status === 200) {
                Vue.prototype.$message({
                   type: "success",
-                  message: response.data.message,
+                  message: "Avatar uploaded successfully!",
                });
 
-               commit(
-                  "auth/UPDATE_USER",
-                  { ...rootState.auth.user, avatar: response.data.avatar },
-                  { root: true }
-               );
+               commit("auth/UPDATE_USER", response.data, { root: true });
                commit("HANDLE_MODAL", false);
             }
          });

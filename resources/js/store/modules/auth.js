@@ -1,6 +1,4 @@
-import { doc, setDoc, updateDoc } from "firebase/firestore";
 import router from "../../routes";
-import moment from "moment";
 
 const auth = {
    namespaced: true,
@@ -32,41 +30,17 @@ const auth = {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", response.data.token);
                   commit("UPDATE_USER", response.data.user);
-                  const firebaseResponse = await addDoc(
-                     collection(database, "status"),
-                     {
-                        id: response.data.user.id,
-                        status: "online",
-                        timestamp: moment().format("YYYY-MM-DD h:mm:ss"),
-                     }
-                  );
 
-                  commit("UPDATE_STATUS", {
-                     statusId: firebaseResponse.id,
-                     userId: response.data.user.id,
-                  });
                   Vue.prototype.$notify({
                      title: "Success",
                      message: "Logged in successfully!",
                      type: "success",
                   });
 
-                  commit("UPDATE_STATUS_ID", response.data.user.id.toString());
-
-                  await setDoc(
-                     doc(database, "status", response.data.user.id.toString()),
-                     {
-                        online: true,
-                        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
-                     }
-                  );
-
-                  setTimeout(() => {
-                     const prevRoute = router.history._startLocation;
-                     router.push({
-                        path: `${prevRoute !== "/login" ? prevRoute : "/chat"}`,
-                     });
-                  }, 1000);
+                  const prevRoute = router.history._startLocation;
+                  router.push({
+                     path: `${prevRoute !== "/login" ? prevRoute : "/chat"}`,
+                  });
                }
             })
             .catch((error) => {
@@ -88,12 +62,8 @@ const auth = {
                      message: "Registration successful!",
                      type: "success",
                   });
-                  setTimeout(() => {
-                     const prevRoute = router.history._startLocation;
-                     router.push({
-                        path: `${prevRoute !== "/login" ? prevRoute : "/chat"}`,
-                     });
-                  }, 1000);
+
+                  router.push({ path: "/chat" });
                }
             })
             .catch((error) => {
@@ -103,9 +73,9 @@ const auth = {
                });
             });
       },
-      async Logout({ commit, rootState }, payload) {
+      async Logout({ commit }, payload) {
          axios
-            .post("/api/logout", payload)
+            .post("/api/logout")
             .then(async (response) => {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", null);
@@ -116,15 +86,6 @@ const auth = {
                      message: "Logged out successfully!",
                      type: "success",
                   });
-
-                  await updateDoc(
-                     doc(database, "status", rootState.auth.statusId),
-                     {
-                        online: false,
-                        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
-                     }
-                  );
-                  commit("UPDATE_STATUS_ID", null);
                }
             })
             .catch((error) => {

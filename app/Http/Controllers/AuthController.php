@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Events\StatusEvent;
 
 class AuthController extends Controller
 {
@@ -21,9 +22,14 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
+        $user->status = 'online';
         $user->save();
 
+        Auth::login($user);
+
         $token = $user->createToken('API TOKEN')->plainTextToken;
+
+        broadcast(new StatusEvent())->toOthers();
 
         return response()->json([
             'user' => $user,
@@ -42,6 +48,10 @@ class AuthController extends Controller
 
             // Generate an API token for the user
             $token = $user->createToken('API TOKEN')->plainTextToken;
+            $user->status = 'online';
+            $user->save();
+
+            broadcast(new StatusEvent())->toOthers();
 
             return response()->json([
                 'user' => $user,
@@ -66,7 +76,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        $user->status = 'offline';
+        $user->save();
         $request->user()->tokens()->delete();
+        broadcast(new StatusEvent($user))->toOthers();
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
 }
