@@ -11,7 +11,19 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::all(), 200);
+        //
+    }
+
+    public function getAvailableUsers()
+    {
+        $user = Auth::user();
+        $users = User::whereNotIn('id', [$user->id])->get();
+        $users = $users->map(function ($user) {
+            $user->avatar = $user->avatar ? '/storage/' . $user->avatar : '/images/avatar/default.png';
+            return $user;
+        })->toArray();
+
+        return response()->json($users, 200);
     }
 
     public function upload_avatar(Request $request)

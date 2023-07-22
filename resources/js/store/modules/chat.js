@@ -39,19 +39,8 @@ const chat = {
          commit("UPDATE_MODAL", false);
       },
       GetAvailableUsers({ commit, rootState }, payload) {
-         axios.get("/api/users").then((response) => {
-            const availableUsers = response.data
-               .filter((user) => user.id !== rootState.auth.user.id)
-               .map((user) => {
-                  return {
-                     ...user,
-                     avatar: user.avatar
-                        ? `/storage/${user.avatar}`
-                        : "/images/avatar/default.png",
-                     status: user.status ? user.status : "offline",
-                  };
-               });
-            commit("UPDATE_AVAILABLE_USERS", availableUsers);
+         axios.get("/api/available-users").then((response) => {
+            commit("UPDATE_AVAILABLE_USERS", response.data);
             commit("UPDATE_MODAL", true);
          });
       },

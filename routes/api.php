@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Users
     Route::post('upload', [UserController::class, 'upload_avatar']);
-    Route::get('users', [UserController::class, 'index']);
+    Route::get('available-users', [UserController::class, 'getAvailableUsers']);
 });
 
 Route::post('register', [AuthController::class, 'register']);
