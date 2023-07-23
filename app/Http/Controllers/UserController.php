@@ -20,6 +20,7 @@ class UserController extends Controller
         $users = User::whereNotIn('id', [$user->id])->get();
         $users = $users->map(function ($user) {
             $user->avatar = $user->avatar ? '/storage/' . $user->avatar : '/images/avatar/default.png';
+            $user->status = $user->status ? $user->status : 'offline';
             return $user;
         })->toArray();
 

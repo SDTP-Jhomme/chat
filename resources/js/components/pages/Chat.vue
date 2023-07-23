@@ -170,6 +170,10 @@ export default {
       window.Echo.private("status-channel").listen("StatusEvent", (e) => {
          this.GetAvailableUsers();
       });
+
+      axios.get("/api/get-messages").then((response) => {
+         console.log(response.data);
+      });
    },
    beforeMount() {
       this.GetMessages();
@@ -184,15 +188,16 @@ export default {
          "AddUser",
       ]),
       send() {
-         this.Send({
-            userId: this.user.id,
-            name: this.user.name,
-            message: this.message,
-         }).then((response) => {
-            if (response) {
-               this.message = "";
-            }
-         });
+         axios
+            .post("/api/send-message", {
+               recipient_id: 2,
+               content: this.message,
+            })
+            .then((response) => {
+               if (response.status === 200) {
+                  this.message = "";
+               }
+            });
       },
       openUserChatModal() {
          this.GetAvailableUsers().then(() => {
@@ -242,7 +247,6 @@ export default {
          this.EmptyAvailableUsers();
       },
       selectUser(user) {
-         console.log(user);
          // this.AddUser(user);
       },
    },
