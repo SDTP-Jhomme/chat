@@ -1,7 +1,10 @@
 <template>
-   <main class="container-md">
-      <slot></slot>
-   </main>
+   <div>
+      <Navbar />
+      <main class="container-md">
+         <slot></slot>
+      </main>
+   </div>
 </template>
 
 <script>

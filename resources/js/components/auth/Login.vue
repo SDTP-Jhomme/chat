@@ -23,10 +23,15 @@
                         label-width="120px"
                      >
                         <el-form-item label="Email" prop="email">
-                           <el-input v-model="login.email"></el-input>
+                           <el-input
+                              type="text"
+                              v-model="login.email"
+                              autocomplete="on"
+                           ></el-input>
                         </el-form-item>
                         <el-form-item label="Password" prop="password">
                            <el-input
+                              type="password"
                               v-model="login.password"
                               show-password
                            ></el-input>
