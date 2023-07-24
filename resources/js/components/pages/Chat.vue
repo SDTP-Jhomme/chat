@@ -139,8 +139,11 @@ export default {
       window.Echo.private("status-channel").listen("StatusEvent", (e) => {
          this.GetAvailableUsers();
       });
-
       this.GetChatRooms();
+   },
+   beforeRouteLeave(to, from, next) {
+      this.EmptyChatUsers();
+      next();
    },
    beforeMount() {
       this.GetMessages();
@@ -153,6 +156,7 @@ export default {
          "GetChatRooms",
          "EmptyAvailableUsers",
          "AddUser",
+         "EmptyChatUsers",
       ]),
       send() {
          axios

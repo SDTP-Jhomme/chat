@@ -21,8 +21,8 @@ const chat = {
       ADD_CHAT_USER(state, payload) {
          state.chatUsers.push(payload);
       },
-      UPDATE_CHAT_USERS(state, payload) {
-         state.chatUsers = payload;
+      EMPTY_CHAT_USERS(state, payload) {
+         state.chatUsers = [];
       },
       UPDATE_AVAILABLE_USERS(state, payload) {
          state.availableUsers = payload;
@@ -44,6 +44,9 @@ const chat = {
       EmptyAvailableUsers({ commit }, payload) {
          commit("UPDATE_AVAILABLE_USERS", null);
          commit("UPDATE_MODAL", false);
+      },
+      EmptyChatUsers({ commit }, payload) {
+         commit("EMPTY_CHAT_USERS");
       },
       GetAvailableUsers({ commit, rootState }, payload) {
          axios.get("/api/available-users").then((response) => {
