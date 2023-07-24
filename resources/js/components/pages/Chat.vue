@@ -27,21 +27,7 @@
                            >New Group Message</el-button
                         >
                      </div>
-                     <!-- <ul class="list-unstyled chat-list mt-2 mb-0">
-                        <li v-for="user in chatUsers" class="clearfix">
-                           <img v-image="user.avatar" alt="avatar" />
-                           <div class="about">
-                              <div class="name">{{ user.name }}</div>
-                              <div class="status">
-                                 <i
-                                    class="fa fa-circle"
-                                    :class="user.online ? 'online' : 'offline'"
-                                 ></i>
-                                 {{ user.online ? "Online" : "Offline" }}
-                              </div>
-                           </div>
-                        </li>
-                     </ul> -->
+                     <chat-list :users="chatUsers" />
                   </div>
                   <div class="chat">
                      <div class="chat-header clearfix">
@@ -126,22 +112,18 @@
          :cancel="cancel"
          width="400px"
       >
-         <chat-list
-            :users="newAvailableUsers"
-            @user-select="selectUser($event)"
-         />
+         <chat-list :users="availableUsers" @user-select="selectUser($event)" />
       </modal>
    </wrapper>
 </template>
 <script>
-import moment from "moment";
 import { mapActions, mapState } from "vuex";
 
 export default {
    data() {
       return {
          message: "",
-         modal: false,
+         currentUser: null,
       };
    },
    computed: {
@@ -152,28 +134,13 @@ export default {
          "chatUsers",
          "userChatModal",
       ]),
-      newAvailableUsers() {
-         if (this.availableUsers) {
-            return this.availableUsers.map((user) => {
-               return {
-                  ...user,
-                  statusText:
-                     user.status === "offline"
-                        ? this.getOfflineTime(user.updated_at)
-                        : "Online",
-               };
-            });
-         }
-      },
    },
    created() {
       window.Echo.private("status-channel").listen("StatusEvent", (e) => {
          this.GetAvailableUsers();
       });
 
-      axios.get("/api/get-messages").then((response) => {
-         console.log(response.data);
-      });
+      this.GetChatRooms();
    },
    beforeMount() {
       this.GetMessages();
@@ -183,7 +150,7 @@ export default {
          "Send",
          "GetMessages",
          "GetAvailableUsers",
-         "AvailableUsersListener",
+         "GetChatRooms",
          "EmptyAvailableUsers",
          "AddUser",
       ]),
@@ -204,50 +171,11 @@ export default {
             this.modal = true;
          });
       },
-      getOfflineTime(offlineTime) {
-         // Get the current date and time
-         const currentDate = moment().utc();
-
-         // Create a saved date object
-         const savedDate = moment(offlineTime);
-
-         // Calculate the difference between the current date and saved date
-         const diff = moment.duration(currentDate.diff(savedDate));
-
-         // Format the difference in the desired format
-         const years = diff.years();
-         const months = diff.months();
-         const days = diff.days();
-         const hours = diff.hours();
-         const minutes = diff.minutes();
-         const seconds = diff.seconds();
-
-         if (years > 0) {
-            return `Offline ${years} ${years === 1 ? "year" : "years"}  ago.`;
-         }
-         if (months > 0) {
-            return `Offline ${months} ${
-               months === 1 ? "month" : "months"
-            }  ago.`;
-         }
-         if (days > 0) {
-            return `Offline for ${days} ${days === 1 ? "day" : "days"}`;
-         }
-         if (hours > 0) {
-            return `Left ${hours} ${hours === 1 ? "hour" : "hours"} ago.`;
-         }
-         if (minutes > 0) {
-            return `Left ${minutes} ${
-               minutes === 1 ? "minute" : "minutes"
-            }  ago.`;
-         }
-         return `Left ${seconds} seconds ago.`;
-      },
       cancel() {
          this.EmptyAvailableUsers();
       },
       selectUser(user) {
-         // this.AddUser(user);
+         this.AddUser(user);
       },
    },
 };

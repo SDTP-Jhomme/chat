@@ -1,10 +1,7 @@
 <template>
-   <Fragment>
-      <Navbar />
-      <main class="container-md">
-         <slot></slot>
-      </main>
-   </Fragment>
+   <main class="container-md">
+      <slot></slot>
+   </main>
 </template>
 
 <script>

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const chat = {
    namespaced: true,
    state: {
@@ -32,7 +34,12 @@ const chat = {
 
    actions: {
       AddUser({ commit }, payload) {
-         commit("ADD_CHAT_USER", payload);
+         axios
+            .post("/api/add-chat-room", { user_ids: [payload.id] })
+            .then((response) => {
+               console.log(response);
+            });
+         // commit("ADD_CHAT_USER", payload);
       },
       EmptyAvailableUsers({ commit }, payload) {
          commit("UPDATE_AVAILABLE_USERS", null);
@@ -42,6 +49,16 @@ const chat = {
          axios.get("/api/available-users").then((response) => {
             commit("UPDATE_AVAILABLE_USERS", response.data);
             commit("UPDATE_MODAL", true);
+         });
+      },
+      GetChatRooms({ commit }, payload) {
+         axios.get("/api/get-chat-rooms").then((response) => {
+            response.data.map((room) => {
+               if (room.users.length > 1) {
+               } else {
+                  commit("ADD_CHAT_USER", room.users[0]);
+               }
+            });
          });
       },
       Send({ commit }, payload) {},

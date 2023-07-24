@@ -15,7 +15,7 @@
     </head>
     <body class="antialiased">
         <div id="app">
-            <router-view></router-view>
+            <app-component></app-component>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>

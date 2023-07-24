@@ -1,7 +1,7 @@
 <template>
    <ul class="list-unstyled chat-list mt-2 mb-0">
       <li
-         v-for="user in users"
+         v-for="user in newUsers"
          class="clearfix"
          @click="$emit('user-select', user)"
       >
@@ -20,15 +20,73 @@
    </ul>
 </template>
 <script>
+import moment from "moment";
+
 export default {
    props: ["users"],
+   computed: {
+      newUsers() {
+         if (this.users) {
+            return this.users.map((user) => {
+               return {
+                  ...user,
+                  statusText:
+                     user.status === "offline"
+                        ? this.getOfflineTime(user.updated_at)
+                        : "Online",
+               };
+            });
+         }
+      },
+   },
+   methods: {
+      getOfflineTime(offlineTime) {
+         // Get the current date and time
+         const currentDate = moment().utc();
+
+         // Create a saved date object
+         const savedDate = moment(offlineTime);
+
+         // Calculate the difference between the current date and saved date
+         const diff = moment.duration(currentDate.diff(savedDate));
+
+         // Format the difference in the desired format
+         const years = diff.years();
+         const months = diff.months();
+         const days = diff.days();
+         const hours = diff.hours();
+         const minutes = diff.minutes();
+         const seconds = diff.seconds();
+
+         if (years > 0) {
+            return `Offline ${years} ${years === 1 ? "year" : "years"}  ago.`;
+         }
+         if (months > 0) {
+            return `Offline ${months} ${
+               months === 1 ? "month" : "months"
+            }  ago.`;
+         }
+         if (days > 0) {
+            return `Offline for ${days} ${days === 1 ? "day" : "days"}`;
+         }
+         if (hours > 0) {
+            return `Left ${hours} ${hours === 1 ? "hour" : "hours"} ago.`;
+         }
+         if (minutes > 0) {
+            return `Left ${minutes} ${
+               minutes === 1 ? "minute" : "minutes"
+            }  ago.`;
+         }
+         return `Left ${seconds} seconds ago.`;
+      },
+   },
 };
 </script>
 
 <style scoped>
 .chat-list {
-   height: 400px;
-   overflow-y: scroll;
+   max-height: 400px;
+   overflow-y: auto;
 }
 .chat-list li {
    padding: 10px 15px;

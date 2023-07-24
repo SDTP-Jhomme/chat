@@ -13,16 +13,19 @@ const routes = [
    {
       path: "/",
       component: Home,
+      name: "home",
       meta: { title: "Laravel", requiresAuth: true },
    },
    {
       path: "/chat",
       component: Chat,
+      name: "chat",
       meta: { title: "Laravel Chat", requiresAuth: true },
    },
    {
       path: "/login",
       component: Login,
+      name: "login",
       meta: { title: "Login" },
       beforeEnter: (to, from, next) => {
          if (store.state.auth.token) {
@@ -35,6 +38,7 @@ const routes = [
    {
       path: "/register",
       component: Register,
+      name: "register",
       meta: { title: "Register" },
       beforeEnter: (to, from, next) => {
          if (store.state.auth.token) {
