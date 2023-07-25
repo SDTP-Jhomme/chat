@@ -25,11 +25,9 @@ class AuthController extends Controller
         $user->status = 'online';
         $user->save();
 
-        Auth::login($user);
-
         $token = $user->createToken('API TOKEN')->plainTextToken;
 
-        broadcast(new StatusEvent())->toOthers();
+        broadcast(new StatusEvent($user))->toOthers();
 
         return response()->json([
             'user' => $user,
@@ -51,7 +49,7 @@ class AuthController extends Controller
             $user->status = 'online';
             $user->save();
 
-            broadcast(new StatusEvent())->toOthers();
+            broadcast(new StatusEvent($user))->toOthers();
 
             return response()->json([
                 'user' => $user,
@@ -81,6 +79,16 @@ class AuthController extends Controller
         $user->save();
         $request->user()->tokens()->delete();
         broadcast(new StatusEvent($user))->toOthers();
+        return response()->json(['message' => 'Logged out successfully'], 200);
+    }
+
+    public function updateUserStatus(Request $request)
+    {
+        $user = Auth::user();
+        $user->status = $request->status;
+        $user->save();
+
+        broadcast(new StatusEvent())->toOthers();
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
 }

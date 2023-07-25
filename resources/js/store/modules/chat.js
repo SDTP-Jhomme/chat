@@ -6,7 +6,7 @@ const chat = {
       userChatModal: false,
       messages: null,
       chatUsers: [],
-      availableUsers: null,
+      availableUsers: [],
    },
 
    getters: {},
@@ -33,13 +33,31 @@ const chat = {
    },
 
    actions: {
-      AddUser({ commit }, payload) {
-         axios
-            .post("/api/add-chat-room", { user_ids: [payload.id] })
-            .then((response) => {
-               console.log(response);
-            });
-         // commit("ADD_CHAT_USER", payload);
+      AddUser({ commit, state }, payload) {
+         const idExists = payload.every((id) =>
+            state.chatUsers.some((user) => user.id === id)
+         );
+
+         if (idExists) {
+            state.chatUsers.find((user) => user.id);
+         } else {
+         }
+      },
+      UpdateUserStatus({ state, commit }, payload) {
+         const index1 = state.availableUsers.findIndex(
+            (user) => user.id === payload.id
+         );
+         const index2 = state.chatUsers.findIndex(
+            (user) => user.id === payload.id
+         );
+         if (index1 !== -1 || index2 !== -1) {
+            if (state.availableUsers.length) {
+               state.availableUsers[index1].status = payload.status;
+               state.availableUsers[index1].updated_at = payload.updated_at;
+            }
+            state.chatUsers[index2].status = payload.status;
+            state.chatUsers[index2].updated_at = payload.updated_at;
+         }
       },
       EmptyAvailableUsers({ commit }, payload) {
          commit("UPDATE_AVAILABLE_USERS", null);
@@ -48,11 +66,13 @@ const chat = {
       EmptyChatUsers({ commit }, payload) {
          commit("EMPTY_CHAT_USERS");
       },
-      GetAvailableUsers({ commit, rootState }, payload) {
+      GetAvailableUsers({ commit }, payload) {
          axios.get("/api/available-users").then((response) => {
             commit("UPDATE_AVAILABLE_USERS", response.data);
-            commit("UPDATE_MODAL", true);
          });
+      },
+      OpenModal({ commit }, payload) {
+         commit("UPDATE_MODAL", true);
       },
       GetChatRooms({ commit }, payload) {
          axios.get("/api/get-chat-rooms").then((response) => {
@@ -64,8 +84,17 @@ const chat = {
             });
          });
       },
-      Send({ commit }, payload) {},
-      GetMessages({ commit }, payload) {},
+      Send({ commit }, payload) {
+         axios
+            .post("/api/send-chat-message", {
+               user_ids: [2],
+               message: "Hello World",
+            })
+            .then((response) => {
+               console.log(response);
+            });
+         // commit("ADD_CHAT_USER", payload);
+      },
    },
 };
 

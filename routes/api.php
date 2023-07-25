@@ -19,13 +19,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('update-user-status', [AuthController::class, 'updateUserStatus']);
 
     // Users
     Route::post('upload', [UserController::class, 'upload_avatar']);
     Route::get('available-users', [UserController::class, 'getAvailableUsers']);
 
     // Chat
-    Route::post('add-chat-room', [ChatController::class, 'createChatRoom']);
+    Route::post('send-chat-message', [ChatController::class, 'sendChatRoomMessage']);
     Route::get('get-chat-rooms', [ChatController::class, 'getChatRooms']);
 });
 

@@ -13,17 +13,24 @@ use Illuminate\Support\Facades\Auth;
 
 class StatusEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $user;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user)
     {
-        $this->user = Auth::user();
+        $this->user = [
+            'id' => $user->id,
+            'status' => $user->status,
+            'updated_at' => $user->updated_at
+        ];
     }
 
     /**

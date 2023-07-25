@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatMessage;
 use App\Models\ChatRoom;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    public function createChatRoom(Request $request)
+    public function sendChatRoomMessage(Request $request)
     {
         $selectedUserIds = $request->input('user_ids');
         $selectedUsers = User::whereIn('id', $selectedUserIds)->get();
@@ -30,14 +31,26 @@ class ChatController extends Controller
             $chatroom->users()->attach($userIds);
         }
 
-        return response()->json($chatroom->fresh('users'), 200);
+        $message = new ChatMessage();
+        $message->message = $request->message;
+        $message->chat_room_id = $chatroom->id;
+        $message->user_id = Auth::id();
+        $message->save();
+
+        $chatroom->messages()->save($message);
+
+        // Load the chatroom with the latest message and its user
+        $chatroom->load(['messages', 'users']);
+
+        return response()->json($chatroom, 200);
     }
 
     public function getChatRooms(Request $request)
     {
         $chatrooms = ChatRoom::with(['users' => function ($query) {
-            $query->where('users.id', '<>', 1);
-        }])->get()
+            $query->where('users.id', '<>', Auth::id());
+        }, 'messages'])
+        ->get()
         ->map(function ($room) {
             $room->users->map(function ($user) {
                 $user->avatar = $user->avatar ? '/storage/' . $user->avatar : '/images/avatar/default.png';

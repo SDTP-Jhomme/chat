@@ -123,7 +123,6 @@ export default {
    data() {
       return {
          message: "",
-         currentUser: null,
       };
    },
    computed: {
@@ -136,8 +135,8 @@ export default {
       ]),
    },
    created() {
-      window.Echo.private("status-channel").listen("StatusEvent", (e) => {
-         this.GetAvailableUsers();
+      window.Echo.private("status-channel").listen("StatusEvent", async (e) => {
+         this.UpdateUserStatus(e.user);
       });
       this.GetChatRooms();
    },
@@ -145,41 +144,30 @@ export default {
       this.EmptyChatUsers();
       next();
    },
-   beforeMount() {
-      this.GetMessages();
-   },
    methods: {
       ...mapActions("chat", [
          "Send",
-         "GetMessages",
          "GetAvailableUsers",
          "GetChatRooms",
          "EmptyAvailableUsers",
          "AddUser",
          "EmptyChatUsers",
+         "OpenModal",
+         "UpdateUserStatus",
       ]),
       send() {
-         axios
-            .post("/api/send-message", {
-               recipient_id: 2,
-               content: this.message,
-            })
-            .then((response) => {
-               if (response.status === 200) {
-                  this.message = "";
-               }
-            });
+         this.Send();
       },
-      openUserChatModal() {
-         this.GetAvailableUsers().then(() => {
-            this.modal = true;
-         });
+      async openUserChatModal() {
+         await this.GetAvailableUsers();
+         this.OpenModal();
       },
       cancel() {
          this.EmptyAvailableUsers();
       },
       selectUser(user) {
-         this.AddUser(user);
+         const users = [user.id];
+         this.AddUser(users);
       },
    },
 };
