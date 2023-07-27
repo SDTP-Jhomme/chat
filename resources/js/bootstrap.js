@@ -17,12 +17,12 @@ window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 window.axios.defaults.withCredentials = true;
 
 // Add a request interceptor
-axios.interceptors.request.use(
+window.axios.interceptors.request.use(
    (config) => {
-      if (store.state.auth.token) {
-         const token = store.state.auth.token;
-         config.headers.Authorization = `Bearer ${token}`;
-      }
+      const token = store.state.auth.token;
+      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Accept = "application/json";
+
       return config;
    },
    (error) => {
@@ -36,9 +36,9 @@ axios.interceptors.request.use(
  * allows your team to easily build robust real-time web applications.
  */
 
-import Echo from 'laravel-echo';
+import Echo from "laravel-echo";
 
-window.Pusher = require('pusher-js');
+window.Pusher = require("pusher-js");
 
 window.Echo = new Echo({
    broadcaster: "pusher",

@@ -10,7 +10,7 @@ require("./global");
 window.Vue = require("vue").default;
 
 import ElementUI from "element-ui";
-import router from "./routes";
+import router from "./router";
 import store from "./store";
 
 Vue.use(ElementUI, { locale: "en" });

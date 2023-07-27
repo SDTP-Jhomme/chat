@@ -1,4 +1,4 @@
-import router from "../../routes";
+import router from "../../router";
 
 const auth = {
    namespaced: true,
@@ -26,7 +26,7 @@ const auth = {
       async Login({ commit }, payload) {
          axios
             .post("/api/login", payload)
-            .then(async (response) => {
+            .then((response) => {
                if (response.status === 200) {
                   commit("UPDATE_TOKEN", response.data.token);
                   commit("UPDATE_USER", response.data.user);
@@ -76,16 +76,18 @@ const auth = {
       async Logout({ commit }, payload) {
          axios
             .post("/api/logout")
-            .then(async (response) => {
+            .then((response) => {
                if (response.status === 200) {
-                  commit("UPDATE_TOKEN", null);
-                  commit("UPDATE_USER", null);
-
                   Vue.prototype.$notify({
                      title: "Success",
                      message: "Logged out successfully!",
                      type: "success",
                   });
+
+                  router.push({ path: "/login" });
+
+                  commit("UPDATE_TOKEN", null);
+                  commit("UPDATE_USER", null);
                }
             })
             .catch((error) => {

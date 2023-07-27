@@ -1,9 +1,10 @@
 <template>
    <ul class="list-unstyled chat-list mt-2 mb-0">
       <li
+         v-if="!groupMessage"
          v-for="user in newUsers"
          class="clearfix"
-         @click="$emit('user-select', user)"
+         @click="$emit('user-select', [user])"
       >
          <img v-image="user.avatar" alt="avatar" />
          <div class="about">
@@ -17,13 +18,39 @@
             </div>
          </div>
       </li>
+      <el-checkbox-group v-else v-model="userList">
+         <el-checkbox
+            v-for="(user, index) in newUsers"
+            :label="user"
+            :key="index"
+         >
+            <li class="clearfix">
+               <img v-image="user.avatar" alt="avatar" />
+               <div class="about">
+                  <div class="name">{{ user.name }}</div>
+                  <div class="status">
+                     <i
+                        class="fa fa-circle"
+                        :class="user.status === 'online' ? 'online' : 'offline'"
+                     ></i>
+                     {{ user.statusText }}
+                  </div>
+               </div>
+            </li>
+         </el-checkbox>
+      </el-checkbox-group>
    </ul>
 </template>
 <script>
 import moment from "moment";
 
 export default {
-   props: ["users"],
+   props: ["users", "groupMessage"],
+   data() {
+      return {
+         userList: [],
+      };
+   },
    computed: {
       newUsers() {
          if (this.users) {
@@ -37,6 +64,11 @@ export default {
                };
             });
          }
+      },
+   },
+   watch: {
+      userList(value) {
+         this.$emit("update:selectedUsers", value);
       },
    },
    methods: {

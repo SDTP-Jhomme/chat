@@ -79,6 +79,7 @@ class AuthController extends Controller
         $user->save();
         $request->user()->tokens()->delete();
         broadcast(new StatusEvent($user))->toOthers();
+
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
 

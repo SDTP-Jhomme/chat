@@ -21,13 +21,16 @@
                      </div>
                      <div class="d-grid mt-2">
                         <el-button
-                           @click="openUserChatModal"
+                           @click="openGroupChatModal"
                            type="primary"
                            icon="el-icon-chat-line-square"
                            >New Group Message</el-button
                         >
                      </div>
-                     <chat-list :users="chatUsers" />
+                     <chat-list
+                        :users="chatUsers"
+                        @user-select="selectUser($event)"
+                     />
                   </div>
                   <div class="chat">
                      <div class="chat-header clearfix">
@@ -114,6 +117,21 @@
       >
          <chat-list :users="availableUsers" @user-select="selectUser($event)" />
       </modal>
+      <modal
+         title="New Message"
+         :visible="groupChatModal"
+         :cancel="cancel"
+         :confirm="confirmSelection"
+         confirmText="Confirm"
+         width="400px"
+      >
+         <chat-list
+            :users="availableUsers"
+            :groupMessage="true"
+            v-model="selectedUsers"
+            @update:selectedUsers="(val) => (selectedUsers = val)"
+         />
+      </modal>
    </wrapper>
 </template>
 <script>
@@ -123,6 +141,7 @@ export default {
    data() {
       return {
          message: "",
+         selectedUsers: [],
       };
    },
    computed: {
@@ -132,6 +151,7 @@ export default {
          "availableUsers",
          "chatUsers",
          "userChatModal",
+         "groupChatModal",
       ]),
    },
    created() {
@@ -152,22 +172,31 @@ export default {
          "EmptyAvailableUsers",
          "AddUser",
          "EmptyChatUsers",
-         "OpenModal",
+         "OpenUserModal",
+         "OpenGroupModal",
          "UpdateUserStatus",
+         "SelectUser",
       ]),
       send() {
-         this.Send();
+         this.Send({ ids: [2], message: this.message });
       },
       async openUserChatModal() {
          await this.GetAvailableUsers();
-         this.OpenModal();
+         this.OpenUserModal();
+      },
+      async openGroupChatModal() {
+         await this.GetAvailableUsers();
+         this.OpenGroupModal();
       },
       cancel() {
          this.EmptyAvailableUsers();
       },
       selectUser(user) {
-         const users = [user.id];
-         this.AddUser(users);
+         console.log(user);
+         // this.SelectUser(user);
+      },
+      confirmSelection() {
+         console.log(this.selectedUsers);
       },
    },
 };

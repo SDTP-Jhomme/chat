@@ -40,7 +40,7 @@
                      </li>
                      <li><hr class="dropdown-divider" /></li>
                      <li class="dropdown-item">
-                        <a class="nav-link" href="" @click="Logout">Logout</a>
+                        <a class="nav-link" @click="Logout">Logout</a>
                      </li>
                   </ul>
                </li>

@@ -31,6 +31,9 @@ class ChatController extends Controller
             $chatroom->users()->attach($userIds);
         }
 
+        $chatroom->updated_at = now();
+        $chatroom->save();
+
         $message = new ChatMessage();
         $message->message = $request->message;
         $message->chat_room_id = $chatroom->id;
@@ -39,7 +42,6 @@ class ChatController extends Controller
 
         $chatroom->messages()->save($message);
 
-        // Load the chatroom with the latest message and its user
         $chatroom->load(['messages', 'users']);
 
         return response()->json($chatroom, 200);

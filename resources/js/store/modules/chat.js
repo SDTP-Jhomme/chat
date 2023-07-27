@@ -4,16 +4,21 @@ const chat = {
    namespaced: true,
    state: {
       userChatModal: false,
+      groupChatModal: false,
       messages: null,
       chatUsers: [],
       availableUsers: [],
+      selectedUsers: [],
    },
 
    getters: {},
 
    mutations: {
-      UPDATE_MODAL(state, payload) {
+      UPDATE_USER_MODAL(state, payload) {
          state.userChatModal = payload;
+      },
+      UPDATE_GROUP_MODAL(state, payload) {
+         state.groupChatModal = payload;
       },
       UPDATE_MESSAGES(state, payload) {
          state.messages = payload;
@@ -33,15 +38,19 @@ const chat = {
    },
 
    actions: {
-      AddUser({ commit, state }, payload) {
-         const idExists = payload.every((id) =>
-            state.chatUsers.some((user) => user.id === id)
-         );
+      SelectUser({ commit, state }, payload) {
+         console.log(payload);
+         // const idExists = payload.every((id) =>
+         //    state.chatUsers.some((user) => user.id === id)
+         // );
 
-         if (idExists) {
-            state.chatUsers.find((user) => user.id);
-         } else {
-         }
+         // if (idExists) {
+         //    if (payload.length > 1) {
+         //    } else {
+         //       state.chatUsers.find((user) => user.id === payload.id);
+         //    }
+         // } else {
+         // }
       },
       UpdateUserStatus({ state, commit }, payload) {
          const index1 = state.availableUsers.findIndex(
@@ -61,7 +70,8 @@ const chat = {
       },
       EmptyAvailableUsers({ commit }, payload) {
          commit("UPDATE_AVAILABLE_USERS", null);
-         commit("UPDATE_MODAL", false);
+         commit("UPDATE_USER_MODAL", false);
+         commit("UPDATE_GROUP_MODAL", false);
       },
       EmptyChatUsers({ commit }, payload) {
          commit("EMPTY_CHAT_USERS");
@@ -71,8 +81,11 @@ const chat = {
             commit("UPDATE_AVAILABLE_USERS", response.data);
          });
       },
-      OpenModal({ commit }, payload) {
-         commit("UPDATE_MODAL", true);
+      OpenUserModal({ commit }, payload) {
+         commit("UPDATE_USER_MODAL", true);
+      },
+      OpenGroupModal({ commit }, payload) {
+         commit("UPDATE_GROUP_MODAL", true);
       },
       GetChatRooms({ commit }, payload) {
          axios.get("/api/get-chat-rooms").then((response) => {
@@ -87,8 +100,8 @@ const chat = {
       Send({ commit }, payload) {
          axios
             .post("/api/send-chat-message", {
-               user_ids: [2],
-               message: "Hello World",
+               user_ids: payload.ids,
+               message: payload.message,
             })
             .then((response) => {
                console.log(response);
